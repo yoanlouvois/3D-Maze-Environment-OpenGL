@@ -28,18 +28,83 @@ The maze is generated procedurally, and the player must explore it and find the 
 
 ## Requirements
 
-- C++
-- CMake
+- A C++ compiler with C++17 support
+- CMake 3.20 or newer
 - OpenGL
-- Git (for submodules)
+- Git
+- Internet connection (dependencies are fetched automatically by CMake)
 
 ---
 
 ## Setup
 
-Clone the repository and initialize dependencies:
+### Option 1 — Build manually with CMake
+
+Clone the repository:
 
 ```bash
 git clone <your-repo-url>
 cd <repo>
-git submodule update --init --recursive
+```
+
+Configure the project:
+
+```bash
+cmake -S . -B build -DCMAKE_BUILD_TYPE=Debug
+```
+
+Build it:
+
+```bash
+cmake --build build
+```
+
+Run the executable:
+
+- **Windows**
+```bash
+.\build\opengl_program.exe
+```
+
+- **Linux / macOS**
+```bash
+./build/opengl_program
+```
+
+---
+
+### Option 2 — Open and run with CLion
+
+Clone the repository:
+
+```bash
+git clone <your-repo-url>
+cd <repo>
+```
+
+Then:
+
+1. Open the project folder in **CLion**
+2. Let CLion load the `CMakeLists.txt`
+3. Wait for the first CMake configure step to finish  
+   (CMake will automatically download GLFW, GLEW, and GLM)
+4. Select the `opengl_program` target
+5. Click **Run** or **Debug**
+
+If CLion has issues with an old configuration, delete the build directory and reload:
+
+- On Linux / macOS:
+```bash
+rm -rf cmake-build-debug
+```
+
+- On Windows: delete the `cmake-build-debug` folder manually
+
+---
+
+### Notes
+
+- No need to initialize git submodules
+- Dependencies are handled automatically via CMake (`FetchContent`)
+- Do not commit build folders (`build/`, `cmake-build-debug/`)
+- Do not commit generated dependency folders (`_deps/`, `*-src`, `*-build`)
