@@ -26,6 +26,7 @@ int main()
     // Chargement du shader pour les textures
     Shader *texture_shader = new Shader(shader_dir + "texture.vert", shader_dir + "texture.frag");
     Shader *phong_shader = new Shader(shader_dir + "phong.vert", shader_dir + "phong.frag");
+    Shader *textured_phong_shader = new Shader(shader_dir + "textured_phong.vert", shader_dir + "textured_phong.frag");
 
     // Obtention du répertoire des textures
     std::string texture_dir = TEXTURE_DIR;
@@ -60,7 +61,7 @@ int main()
     viewer.setWallGrid(maze.getGrid());
 
     // Ajout des murs du labyrinthe à la scène du Viewer
-    maze.addToScene(viewer.scene_root, texture_shader, wall_texture, floor_texture, phong_shader);
+    maze.addToScene(viewer.scene_root, textured_phong_shader, wall_texture, floor_texture, phong_shader);
 
     // Création de la sphère du ciel
     SkySphere* sky = new SkySphere(texture_shader, sky_texture, 48, 24);
@@ -76,9 +77,13 @@ int main()
 
     // Configuration de l'éclairage
     phong_shader->use();
-    phong_shader->setVec3("lightColor", glm::vec3(1.0f, 1.0f, 1.0f));
-    phong_shader->setVec3("lightPos", glm::vec3(5.0f, 5.0f, 5.0f));  // Position de la lumière dans le labyrinthe
+    phong_shader->setVec3("lightColor", glm::vec3(0.45f, 0.55f, 0.9f));
+    phong_shader->setVec3("lightPos", glm::vec3(10.0f, 3.0f, 10.0f));
 
+    // Eclairage des murs
+    textured_phong_shader->use();
+    textured_phong_shader->setVec3("lightColor", glm::vec3(0.45f, 0.55f, 0.9f));
+    textured_phong_shader->setVec3("lightPos", glm::vec3(10.0f, 3.0f, 10.0f));
 
     // Ajouter un cube au début du labyrinthe
     glm::ivec2 positionEntree = maze.getEntrancePosition();
