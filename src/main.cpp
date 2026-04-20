@@ -2,6 +2,7 @@
 #include "texture.h"
 #include "maze.h"
 #include "textured_cube.h"
+#include "sky_sphere.h"
 #include <string>
 
 #ifndef SHADER_DIR
@@ -33,6 +34,9 @@ int main()
     Texture *start_texture = new Texture(texture_dir + "start.jpg", GL_REPEAT, GL_LINEAR_MIPMAP_LINEAR, GL_LINEAR);
     Texture *end_texture = new Texture(texture_dir + "youWin.jpg", GL_REPEAT, GL_LINEAR_MIPMAP_LINEAR, GL_LINEAR);
 
+    // Chargement de la texture du ciel
+    Texture *sky_texture = new Texture(texture_dir + "sky2.png", GL_REPEAT, GL_LINEAR_MIPMAP_LINEAR, GL_LINEAR);
+
     // Définition de la taille du labyrinthe
     int maze_width = 21;
     int maze_height = 21;
@@ -52,6 +56,18 @@ int main()
 
     // Ajout des murs du labyrinthe à la scène du Viewer
     maze.addToScene(viewer.scene_root, texture_shader, wall_texture, floor_texture, phong_shader);
+
+    // Création de la sphère du ciel
+    SkySphere* sky = new SkySphere(texture_shader, sky_texture, 48, 24);
+    glm::vec3 skyCenter = glm::vec3(maze_width / 2.0f, 6.0f, maze_height / 2.0f);
+    // scale négatif sur X pour voir l'intérieur de la sphère
+    glm::mat4 sky_mat = glm::translate(glm::mat4(1.0f), skyCenter)
+                        * glm::scale(glm::mat4(1.0f), glm::vec3(-80.0f, 40.0f, 80.0f));
+
+    Node* sky_node = new Node(sky_mat);
+    sky_node->add(sky);
+    viewer.scene_root->add(sky_node);
+
 
     // Configuration de l'éclairage
     phong_shader->use();
