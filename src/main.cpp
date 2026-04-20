@@ -37,8 +37,8 @@ int main()
     // Chargement de la texture des murs du labyrinthe
     Texture *wall_texture = new Texture(texture_dir + "wall1.png", GL_REPEAT, GL_LINEAR_MIPMAP_LINEAR, GL_LINEAR);
     Texture *floor_texture = new Texture(texture_dir + "floor.png", GL_REPEAT, GL_LINEAR_MIPMAP_LINEAR, GL_LINEAR);
-    Texture *start_texture = new Texture(texture_dir + "start.jpg", GL_REPEAT, GL_LINEAR_MIPMAP_LINEAR, GL_LINEAR);
-    Texture *end_texture = new Texture(texture_dir + "youWin.jpg", GL_REPEAT, GL_LINEAR_MIPMAP_LINEAR, GL_LINEAR);
+    Texture *start_texture = new Texture(texture_dir + "start2.png", GL_REPEAT, GL_LINEAR_MIPMAP_LINEAR, GL_LINEAR);
+    Texture *end_texture = new Texture(texture_dir + "exit2.png", GL_REPEAT, GL_LINEAR_MIPMAP_LINEAR, GL_LINEAR);
 
     // Chargement de la texture du ciel
     Texture *sky_texture = new Texture(texture_dir + "sky2.png", GL_REPEAT, GL_LINEAR_MIPMAP_LINEAR, GL_LINEAR);
@@ -61,7 +61,15 @@ int main()
 
 
     // Mise à jour de la grille de murs dans le Viewer
-    viewer.setWallGrid(maze.getGrid());
+    auto wallGrid = maze.getGrid();
+
+    glm::ivec2 positionEntree = maze.getEntrancePosition();
+    glm::ivec2 exitPosition = maze.getExitPosition();
+
+    wallGrid[positionEntree.y][positionEntree.x] = 1;
+    wallGrid[exitPosition.y][exitPosition.x] = 1;
+
+    viewer.setWallGrid(wallGrid);
 
     // Ajout des murs du labyrinthe à la scène du Viewer
     maze.addToScene(viewer.scene_root, textured_phong_shader, wall_texture, floor_texture, phong_shader);
@@ -89,12 +97,11 @@ int main()
     textured_phong_shader->setVec3("lightPos", glm::vec3(10.0f, 3.0f, 10.0f));
 
     // Ajouter un cube au début du labyrinthe
-    glm::ivec2 positionEntree = maze.getEntrancePosition();
     glm::vec3 startCubePosition = glm::vec3(positionEntree.x, 0.0f, positionEntree.y);
 
-    TexturedCube* startCube = new TexturedCube(texture_shader, start_texture);
+    TexturedCube* startCube = new TexturedCube(textured_phong_shader, start_texture);
     glm::mat4 startCube_mat = glm::translate(glm::mat4(1.0f), startCubePosition)
-                        * glm::rotate(glm::mat4(1.0f), glm::radians(180.0f), glm::vec3(1.0f, 0.0f, 0.0f))  // Rotation de 180 degrés autour de l'axe x
+                         * glm::rotate(glm::mat4(1.0f), glm::radians(180.0f), glm::vec3(0.0f, 1.0f, 0.0f))
                          * glm::scale(glm::mat4(1.0f), glm::vec3(1.0f, 1.0f, 1.0f));
     Node* startCube_node = new Node(startCube_mat);
     startCube_node->add(startCube);
@@ -102,12 +109,11 @@ int main()
 
 
     // Ajouter un cube à la sortie du labyrinthe
-    glm::ivec2 exitPosition = maze.getExitPosition();
     glm::vec3 cubePosition = glm::vec3(exitPosition.x, 0.0f, exitPosition.y);
 
-    TexturedCube* exitCube = new TexturedCube(texture_shader, end_texture);
+    TexturedCube* exitCube = new TexturedCube(textured_phong_shader, end_texture);
     glm::mat4 cube_mat = glm::translate(glm::mat4(1.0f), cubePosition)
-                        * glm::rotate(glm::mat4(1.0f), glm::radians(180.0f), glm::vec3(1.0f, 0.0f, 0.0f))  // Rotation de 180 degrés autour de l'axe x
+                         * glm::rotate(glm::mat4(1.0f), glm::radians(180.0f), glm::vec3(0.0f, 1.0f, 0.0f))
                          * glm::scale(glm::mat4(1.0f), glm::vec3(1.0f, 1.0f, 1.0f));
     Node* cube_node = new Node(cube_mat);
     cube_node->add(exitCube);

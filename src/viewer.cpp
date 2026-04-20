@@ -24,7 +24,11 @@ Viewer::Viewer(int width, int height)
     glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
 
     // Crée la fenêtre GLFW
-    win = glfwCreateWindow(width, height, "Viewer", NULL, NULL);
+    //win = glfwCreateWindow(width, height, "Viewer", NULL, NULL);
+    GLFWmonitor* monitor = glfwGetPrimaryMonitor();
+    const GLFWvidmode* mode = glfwGetVideoMode(monitor);
+
+    win = glfwCreateWindow(mode->width, mode->height, "Viewer", monitor, NULL);
 
     if (win == NULL) {
         std::cerr << "Failed to create window" << std::endl;
