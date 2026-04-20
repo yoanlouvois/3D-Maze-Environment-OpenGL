@@ -30,7 +30,6 @@ int main()
     // Chargement de la texture des murs du labyrinthe
     Texture *wall_texture = new Texture(texture_dir + "wall1.png", GL_REPEAT, GL_LINEAR_MIPMAP_LINEAR, GL_LINEAR);
     Texture *floor_texture = new Texture(texture_dir + "floor.png", GL_REPEAT, GL_LINEAR_MIPMAP_LINEAR, GL_LINEAR);
-    Texture *ceiling_texture = new Texture(texture_dir + "ceiling.png", GL_REPEAT, GL_LINEAR_MIPMAP_LINEAR, GL_LINEAR);
     Texture *start_texture = new Texture(texture_dir + "start.jpg", GL_REPEAT, GL_LINEAR_MIPMAP_LINEAR, GL_LINEAR);
     Texture *end_texture = new Texture(texture_dir + "youWin.jpg", GL_REPEAT, GL_LINEAR_MIPMAP_LINEAR, GL_LINEAR);
 
@@ -52,7 +51,7 @@ int main()
     viewer.setWallGrid(maze.getGrid());
 
     // Ajout des murs du labyrinthe à la scène du Viewer
-    maze.addToScene(viewer.scene_root, texture_shader, wall_texture, floor_texture, ceiling_texture, phong_shader);
+    maze.addToScene(viewer.scene_root, texture_shader, wall_texture, floor_texture, phong_shader);
 
     // Configuration de l'éclairage
     phong_shader->use();

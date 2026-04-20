@@ -6,7 +6,7 @@
 
 // Constructeur : initialise les paramètres de la fenêtre et de la caméra
 Viewer::Viewer(int width, int height)
-        : yaw(-90.0f), pitch(0.0f), lastX(width / 2.0f), lastY(height / 2.0f), firstMouse(true), cameraSpeed(0.05f),
+        : yaw(-90.0f), pitch(0.0f), lastX(width / 2.0f), lastY(height / 2.0f), firstMouse(true), cameraSpeed(0.01f),
           cameraPos(glm::vec3(0.0f, 0.0f, 3.0f)), cameraFront(glm::vec3(0.0f, 0.0f, -1.0f)), cameraUp(glm::vec3(0.0f, 1.0f, 0.0f)),
           fixedHeight(0.0f)
 {
@@ -55,7 +55,7 @@ Viewer::Viewer(int width, int height)
               << glGetString(GL_RENDERER) << std::endl;
 
     // Initialise OpenGL en définissant le viewport et les caractéristiques de rendu par défaut
-    glClearColor(0.1f, 0.1f, 0.1f, 0.1f);
+    glClearColor(0.02f, 0.02f, 0.08f, 1.0f);
 
     // Activer le test de profondeur pour le rendu 3D
     glEnable(GL_DEPTH_TEST);
@@ -133,23 +133,24 @@ void Viewer::setWallGrid(const std::vector<std::vector<bool>>& grid) {
 // Boucle principale de rendu
 void Viewer::run()
 {
+    // On nettoie la boucle : une seule boucle run
     while (!glfwWindowShouldClose(win))
     {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        // Vérifier les entrées du clavier pour le mouvement de la caméra
+        // Gestion des entrées et du mouvement
         handle_camera_movement();
 
+        // Calcul des matrices
         glm::mat4 model = glm::mat4(1.0f);
         glm::mat4 view = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
-        glm::mat4 projection = glm::perspective(glm::radians(45.0f), 1.0f, 0.1f, 10.0f);
+        glm::mat4 projection = glm::perspective(glm::radians(45.0f), (float)1024/768, 0.1f, 100.0f);
 
         scene_root->draw(model, view, projection);
 
         glfwPollEvents();
         glfwSwapBuffers(win);
     }
-
     glfwTerminate();
 }
 
@@ -179,40 +180,62 @@ bool Viewer::checkCollision(const glm::vec3& newPos) {
 
 // Gestion du mouvement de la caméra
 void Viewer::handle_camera_movement() {
-    float cameraSpeed = this->cameraSpeed * 0.2f; // Ajustez la vitesse en fonction du temps de frame
+    float cameraSpeed = this->cameraSpeed; // Utilise ta variable membre
 
-    if (glfwGetKey(win, GLFW_KEY_W) == GLFW_PRESS || glfwGetKey(win, GLFW_KEY_UP) == GLFW_PRESS) {
-        glm::vec3 newPos = cameraPos + cameraSpeed * cameraFront;
-        if (!checkCollision(newPos)) {
-            cameraPos = newPos;
+    // 1. Calcul du vecteur de déplacement horizontal (XZ uniquement)
+    glm::vec3 walkFront = glm::normalize(glm::vec3(cameraFront.x, 0.0f, cameraFront.z));
+    glm::vec3 walkRight = glm::normalize(glm::cross(walkFront, cameraUp));
+    glm::vec3 moveDir = glm::vec3(0.0f);
+
+    if (glfwGetKey(win, GLFW_KEY_W) == GLFW_PRESS) moveDir += walkFront;
+    if (glfwGetKey(win, GLFW_KEY_S) == GLFW_PRESS) moveDir -= walkFront;
+    if (glfwGetKey(win, GLFW_KEY_A) == GLFW_PRESS) moveDir -= walkRight;
+    if (glfwGetKey(win, GLFW_KEY_D) == GLFW_PRESS) moveDir += walkRight;
+
+    // 2. Application du déplacement avec collision
+    if (glm::length(moveDir) > 0) {
+        moveDir = glm::normalize(moveDir) * cameraSpeed;
+        if (!checkCollision(cameraPos + moveDir)) {
+            cameraPos += moveDir;
         }
     }
 
-    if (glfwGetKey(win, GLFW_KEY_S) == GLFW_PRESS || glfwGetKey(win, GLFW_KEY_DOWN) == GLFW_PRESS) {
-        glm::vec3 newPos = cameraPos - cameraSpeed * cameraFront;
-        if (!checkCollision(newPos)) {
-            cameraPos = newPos;
-        }
-    }
+    // 3. Effet de marche amélioré
+    apply_head_bobbing();
+}
 
-    if (glfwGetKey(win, GLFW_KEY_A) == GLFW_PRESS || glfwGetKey(win, GLFW_KEY_LEFT) == GLFW_PRESS) {
+void Viewer::apply_head_bobbing() {
+    // On utilise le temps global de GLFW pour ne pas dépendre du deltaTime en paramètre
+    float time = (float)glfwGetTime();
+
+    // Paramètres réglables pour le "feeling"
+    float bobFreq = 10.0f;     // Fréquence des pas
+    float bobMoveAmp = 0.05f;  // Amplitude verticale
+    float sideStepAmp = 0.03f; // Amplitude latérale
+
+    bool isMoving = (glfwGetKey(win, GLFW_KEY_W) == GLFW_PRESS ||
+                     glfwGetKey(win, GLFW_KEY_S) == GLFW_PRESS ||
+                     glfwGetKey(win, GLFW_KEY_A) == GLFW_PRESS ||
+                     glfwGetKey(win, GLFW_KEY_D) == GLFW_PRESS);
+
+    if (isMoving) {
+        // Courbe en "M" pour le vertical (plus naturel qu'un simple sinus)
+        // sin(x) donne un balancement, abs(sin(x)) simule l'impact du pied
+        float waveY = std::abs(std::sin(time * bobFreq)) * bobMoveAmp;
+
+        // Balancement latéral (oscille deux fois moins vite que le pas vertical)
+        float waveX = std::sin(time * bobFreq * 0.5f) * sideStepAmp;
+
+        // On applique la hauteur de base + l'oscillation
+        cameraPos.y = fixedHeight + waveY;
+
+        // Pour le balancement latéral, on décale légèrement la caméra sur son axe local "droite"
         glm::vec3 right = glm::normalize(glm::cross(cameraFront, cameraUp));
-        glm::vec3 newPos = cameraPos - right * cameraSpeed;
-        if (!checkCollision(newPos)) {
-            cameraPos = newPos;
-        }
+        cameraPos += right * waveX * 0.1f; // Influence légère pour ne pas donner le mal de mer
+    } else {
+        // Au repos : retour fluide à la hauteur fixe
+        cameraPos.y = glm::mix(cameraPos.y, fixedHeight, 0.1f);
     }
-
-    if (glfwGetKey(win, GLFW_KEY_D) == GLFW_PRESS || glfwGetKey(win, GLFW_KEY_RIGHT) == GLFW_PRESS) {
-        glm::vec3 right = glm::normalize(glm::cross(cameraFront, cameraUp));
-        glm::vec3 newPos = cameraPos + right * cameraSpeed;
-        if (!checkCollision(newPos)) {
-            cameraPos = newPos;
-        }
-    }
-
-    // Contraindre la hauteur de la caméra
-    cameraPos.y = fixedHeight;
 }
 
 

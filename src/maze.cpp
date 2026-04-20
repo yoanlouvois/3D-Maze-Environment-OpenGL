@@ -55,7 +55,7 @@ const std::vector<std::vector<bool>>& Maze::getGrid() const {
     return grid;
 }
 
-void Maze::addToScene(Node* scene_root, Shader* texture_shader, Texture* wall_texture, Texture* floor_texture, Texture* ceiling_texture, Shader* phong_shader) {
+void Maze::addToScene(Node* scene_root, Shader* texture_shader, Texture* wall_texture, Texture* floor_texture, Shader* phong_shader) {
     for (int y = 0; y < height; ++y) {
         for (int x = 0; x < width; ++x) {
             if (grid[y][x]) {
@@ -82,14 +82,6 @@ void Maze::addToScene(Node* scene_root, Shader* texture_shader, Texture* wall_te
             Node* floor_node = new Node(floor_mat);
             floor_node->add(floor);
             scene_root->add(floor_node);
-
-            // Ajouter le plafond
-            Shape* ceiling = new TexturedCube(texture_shader, ceiling_texture);
-            glm::mat4 ceiling_mat = glm::translate(glm::mat4(1.0f), glm::vec3(x, 1.0f, y))
-                                    * glm::scale(glm::mat4(1.0f), glm::vec3(1.0f, 1.0f, 1.0f));
-            Node* ceiling_node = new Node(ceiling_mat);
-            ceiling_node->add(ceiling);
-            scene_root->add(ceiling_node);
         }
     }
 }
