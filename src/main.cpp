@@ -28,6 +28,9 @@ int main()
     Shader *phong_shader = new Shader(shader_dir + "phong.vert", shader_dir + "phong.frag");
     Shader *textured_phong_shader = new Shader(shader_dir + "textured_phong.vert", shader_dir + "textured_phong.frag");
 
+    // Mettre le shader sur le viewer
+    viewer.setLightingShader(textured_phong_shader);
+
     // Obtention du répertoire des textures
     std::string texture_dir = TEXTURE_DIR;
 

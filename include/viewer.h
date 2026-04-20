@@ -6,6 +6,7 @@
 #include <glm/glm.hpp>
 #include "node.h"
 #include <vector>
+#include "shader.h"
 
 class Viewer {
 public:
@@ -15,6 +16,9 @@ public:
     void setWallGrid(const std::vector<std::vector<bool>>& grid);
 
     Node* scene_root;
+
+    void setLightingShader(Shader* shader);
+
 private:
     GLFWwindow* win;
     glm::vec3 cameraPos;
@@ -30,7 +34,9 @@ private:
     float bobAmount = 0.05f;
     float bobSpeed = 10.0f;
     float deltaTime;
+    Shader* lightingShader;
 
+    glm::vec3 getCameraPosition() const;
     void on_key(int key, int action);
     void on_mouse_move(double xpos, double ypos);
     void handle_camera_movement();
@@ -38,6 +44,7 @@ private:
     bool checkCollision(const glm::vec3& newPos);
     static void key_callback_static(GLFWwindow* window, int key, int scancode, int action, int mods);
     static void mouse_callback_static(GLFWwindow* window, double xpos, double ypos);
+
 };
 
 #endif // VIEWER_H

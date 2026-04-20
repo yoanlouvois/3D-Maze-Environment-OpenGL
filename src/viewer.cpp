@@ -146,6 +146,11 @@ void Viewer::run()
         glm::mat4 view = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
         glm::mat4 projection = glm::perspective(glm::radians(45.0f), (float)1024/768, 0.1f, 100.0f);
 
+        if (lightingShader) {
+            lightingShader->use();
+            lightingShader->setVec3("lightPos", cameraPos);
+        }
+
         scene_root->draw(model, view, projection);
 
         glfwPollEvents();
@@ -268,6 +273,14 @@ void Viewer::apply_head_bobbing() {
         // Au repos : retour fluide à la hauteur fixe
         cameraPos.y = glm::mix(cameraPos.y, fixedHeight, 0.1f);
     }
+}
+
+glm::vec3 Viewer::getCameraPosition() const {
+    return cameraPos;
+}
+
+void Viewer::setLightingShader(Shader* shader) {
+    lightingShader = shader;
 }
 
 
