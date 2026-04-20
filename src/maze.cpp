@@ -68,12 +68,13 @@ void Maze::addToScene(Node* scene_root, Shader* texture_shader, Texture* wall_te
                 scene_root->add(wall_node);
 
                 // Ajouter une source de lumière accrochée au mur
+                /**
                 Shape* light = new TexturedCube(phong_shader, wall_texture);
                 glm::mat4 light_mat = glm::translate(glm::mat4(1.0f), glm::vec3(x, 0.5f, y))
                                       * glm::scale(glm::mat4(1.0f), glm::vec3(0.1f, 0.1f, 0.1f));
                 Node* light_node = new Node(light_mat);
                 light_node->add(light);
-                scene_root->add(light_node);
+                scene_root->add(light_node);*/
             }
             // Ajouter le sol
             Shape* floor = new TexturedCube(texture_shader, floor_texture);

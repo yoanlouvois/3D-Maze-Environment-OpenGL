@@ -38,7 +38,7 @@ Cube::Cube(Shader* shader_program) : Shape(shader_program) {
 
 Cube::~Cube() {
     glDeleteVertexArrays(1, &VAO);
-    glDeleteBuffers(3, buffers);
+    glDeleteBuffers(4, buffers);
 }
 
 void Cube::draw(glm::mat4& model, glm::mat4& view, glm::mat4& projection) {
@@ -54,39 +54,116 @@ void Cube::draw(glm::mat4& model, glm::mat4& view, glm::mat4& projection) {
 void Cube::buildVertices() {
     vertices = {
             // Front face
-            glm::vec3(-0.5f, -0.5f,  0.5f), // Vertex 1
-            glm::vec3( 0.5f, -0.5f,  0.5f), // Vertex 2
-            glm::vec3( 0.5f,  0.5f,  0.5f), // Vertex 3
-            glm::vec3(-0.5f,  0.5f,  0.5f), // Vertex 4
+            glm::vec3(-0.5f, -0.5f,  0.5f),
+            glm::vec3( 0.5f, -0.5f,  0.5f),
+            glm::vec3( 0.5f,  0.5f,  0.5f),
+            glm::vec3(-0.5f,  0.5f,  0.5f),
+
             // Back face
-            glm::vec3(-0.5f, -0.5f, -0.5f), // Vertex 5
-            glm::vec3( 0.5f, -0.5f, -0.5f), // Vertex 6
-            glm::vec3( 0.5f,  0.5f, -0.5f), // Vertex 7
-            glm::vec3(-0.5f,  0.5f, -0.5f)  // Vertex 8
+            glm::vec3( 0.5f, -0.5f, -0.5f),
+            glm::vec3(-0.5f, -0.5f, -0.5f),
+            glm::vec3(-0.5f,  0.5f, -0.5f),
+            glm::vec3( 0.5f,  0.5f, -0.5f),
+
+            // Left face
+            glm::vec3(-0.5f, -0.5f, -0.5f),
+            glm::vec3(-0.5f, -0.5f,  0.5f),
+            glm::vec3(-0.5f,  0.5f,  0.5f),
+            glm::vec3(-0.5f,  0.5f, -0.5f),
+
+            // Right face
+            glm::vec3( 0.5f, -0.5f,  0.5f),
+            glm::vec3( 0.5f, -0.5f, -0.5f),
+            glm::vec3( 0.5f,  0.5f, -0.5f),
+            glm::vec3( 0.5f,  0.5f,  0.5f),
+
+            // Top face
+            glm::vec3(-0.5f,  0.5f,  0.5f),
+            glm::vec3( 0.5f,  0.5f,  0.5f),
+            glm::vec3( 0.5f,  0.5f, -0.5f),
+            glm::vec3(-0.5f,  0.5f, -0.5f),
+
+            // Bottom face
+            glm::vec3(-0.5f, -0.5f, -0.5f),
+            glm::vec3( 0.5f, -0.5f, -0.5f),
+            glm::vec3( 0.5f, -0.5f,  0.5f),
+            glm::vec3(-0.5f, -0.5f,  0.5f)
     };
 
     normals = {
+            // Front
             glm::vec3( 0.0f,  0.0f,  1.0f),
             glm::vec3( 0.0f,  0.0f,  1.0f),
             glm::vec3( 0.0f,  0.0f,  1.0f),
             glm::vec3( 0.0f,  0.0f,  1.0f),
+
+            // Back
             glm::vec3( 0.0f,  0.0f, -1.0f),
             glm::vec3( 0.0f,  0.0f, -1.0f),
             glm::vec3( 0.0f,  0.0f, -1.0f),
-            glm::vec3( 0.0f,  0.0f, -1.0f)
+            glm::vec3( 0.0f,  0.0f, -1.0f),
+
+            // Left
+            glm::vec3(-1.0f,  0.0f,  0.0f),
+            glm::vec3(-1.0f,  0.0f,  0.0f),
+            glm::vec3(-1.0f,  0.0f,  0.0f),
+            glm::vec3(-1.0f,  0.0f,  0.0f),
+
+            // Right
+            glm::vec3( 1.0f,  0.0f,  0.0f),
+            glm::vec3( 1.0f,  0.0f,  0.0f),
+            glm::vec3( 1.0f,  0.0f,  0.0f),
+            glm::vec3( 1.0f,  0.0f,  0.0f),
+
+            // Top
+            glm::vec3( 0.0f,  1.0f,  0.0f),
+            glm::vec3( 0.0f,  1.0f,  0.0f),
+            glm::vec3( 0.0f,  1.0f,  0.0f),
+            glm::vec3( 0.0f,  1.0f,  0.0f),
+
+            // Bottom
+            glm::vec3( 0.0f, -1.0f,  0.0f),
+            glm::vec3( 0.0f, -1.0f,  0.0f),
+            glm::vec3( 0.0f, -1.0f,  0.0f),
+            glm::vec3( 0.0f, -1.0f,  0.0f)
     };
 
     texCoords = {
-            // Front face
-            glm::vec2(0.0f, 0.0f), // Vertex 1
-            glm::vec2(1.0f, 0.0f), // Vertex 2
-            glm::vec2(1.0f, 1.0f), // Vertex 3
-            glm::vec2(0.0f, 1.0f), // Vertex 4
-            // Back face
-            glm::vec2(1.0f, 0.0f), // Vertex 5
-            glm::vec2(0.0f, 0.0f), // Vertex 6
-            glm::vec2(0.0f, 1.0f), // Vertex 7
-            glm::vec2(1.0f, 1.0f)  // Vertex 8
+            // Front
+            glm::vec2(0.0f, 0.0f),
+            glm::vec2(1.0f, 0.0f),
+            glm::vec2(1.0f, 1.0f),
+            glm::vec2(0.0f, 1.0f),
+
+            // Back
+            glm::vec2(0.0f, 0.0f),
+            glm::vec2(1.0f, 0.0f),
+            glm::vec2(1.0f, 1.0f),
+            glm::vec2(0.0f, 1.0f),
+
+            // Left
+            glm::vec2(0.0f, 0.0f),
+            glm::vec2(1.0f, 0.0f),
+            glm::vec2(1.0f, 1.0f),
+            glm::vec2(0.0f, 1.0f),
+
+            // Right
+            glm::vec2(0.0f, 0.0f),
+            glm::vec2(1.0f, 0.0f),
+            glm::vec2(1.0f, 1.0f),
+            glm::vec2(0.0f, 1.0f),
+
+            // Top
+            glm::vec2(0.0f, 0.0f),
+            glm::vec2(1.0f, 0.0f),
+            glm::vec2(1.0f, 1.0f),
+            glm::vec2(0.0f, 1.0f),
+
+            // Bottom
+            glm::vec2(0.0f, 0.0f),
+            glm::vec2(1.0f, 0.0f),
+            glm::vec2(1.0f, 1.0f),
+            glm::vec2(0.0f, 1.0f)
     };
 }
 
@@ -94,11 +171,11 @@ void Cube::buildVertices() {
 
 void Cube::buildIndices() {
     indices = {
-            0, 1, 2, 2, 3, 0, // Front face
-            4, 5, 6, 6, 7, 4, // Back face
-            0, 1, 5, 5, 4, 0, // Bottom face
-            2, 3, 7, 7, 6, 2, // Top face
-            0, 3, 7, 7, 4, 0, // Left face
-            1, 2, 6, 6, 5, 1  // Right face
+            0, 1, 2, 2, 3, 0,       // Front
+            4, 5, 6, 6, 7, 4,       // Back
+            8, 9, 10, 10, 11, 8,    // Left
+            12, 13, 14, 14, 15, 12, // Right
+            16, 17, 18, 18, 19, 16, // Top
+            20, 21, 22, 22, 23, 20  // Bottom
     };
 }
