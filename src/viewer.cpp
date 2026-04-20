@@ -165,17 +165,30 @@ void Viewer::on_key(int key, int action)
 }
 
 bool Viewer::checkCollision(const glm::vec3& newPos) {
-    // Convertir la position en indices de grille
-    int x = static_cast<int>(newPos.x + 0.5f); // Arrondi à l'entier le plus proche
-    int z = static_cast<int>(newPos.z + 0.5f); // Arrondi à l'entier le plus proche
+    float radius = 0.15f;
 
-    // Vérifier les limites de la grille
-    if (x < 0 || x >= static_cast<int>(wallGrid[0].size()) || z < 0 || z >= static_cast<int>(wallGrid.size())) {
-        return true; // Hors de la grille
+    std::vector<glm::vec3> points = {
+            glm::vec3(newPos.x - radius, newPos.y, newPos.z - radius),
+            glm::vec3(newPos.x + radius, newPos.y, newPos.z - radius),
+            glm::vec3(newPos.x - radius, newPos.y, newPos.z + radius),
+            glm::vec3(newPos.x + radius, newPos.y, newPos.z + radius)
+    };
+
+    for (const auto& p : points) {
+        int x = static_cast<int>(p.x + 0.5f);
+        int z = static_cast<int>(p.z + 0.5f);
+
+        if (x < 0 || x >= static_cast<int>(wallGrid[0].size()) ||
+            z < 0 || z >= static_cast<int>(wallGrid.size())) {
+            return true;
+        }
+
+        if (wallGrid[z][x]) {
+            return true;
+        }
     }
 
-    // Vérifier la collision avec un mur
-    return wallGrid[z][x];
+    return false;
 }
 
 // Gestion du mouvement de la caméra
@@ -198,9 +211,25 @@ void Viewer::handle_camera_movement() {
     // 2. Application du déplacement avec collision
     if (glm::length(moveDir) > 0) {
         moveDir = glm::normalize(moveDir) * currentSpeed;
-        if (!checkCollision(cameraPos + moveDir)) {
-            cameraPos += moveDir;
+
+        glm::vec3 newPos = cameraPos;
+
+        // Test déplacement sur X uniquement
+        glm::vec3 tryX = newPos;
+        tryX.x += moveDir.x;
+        if (!checkCollision(tryX)) {
+            newPos.x = tryX.x;
         }
+
+        // Test déplacement sur Z uniquement
+        glm::vec3 tryZ = newPos;
+        tryZ.z += moveDir.z;
+        if (!checkCollision(tryZ)) {
+            newPos.z = tryZ.z;
+        }
+
+        cameraPos.x = newPos.x;
+        cameraPos.z = newPos.z;
     }
 
     // 3. Effet de marche amélioré
@@ -233,8 +262,8 @@ void Viewer::apply_head_bobbing() {
         cameraPos.y = fixedHeight + waveY;
 
         // Pour le balancement latéral, on décale légèrement la caméra sur son axe local "droite"
-        glm::vec3 right = glm::normalize(glm::cross(cameraFront, cameraUp));
-        cameraPos += right * waveX * 0.1f; // Influence légère pour ne pas donner le mal de mer
+        //glm::vec3 right = glm::normalize(glm::cross(cameraFront, cameraUp));
+        //cameraPos += right * waveX * 0.1f; // Influence légère pour ne pas donner le mal de mer
     } else {
         // Au repos : retour fluide à la hauteur fixe
         cameraPos.y = glm::mix(cameraPos.y, fixedHeight, 0.1f);
