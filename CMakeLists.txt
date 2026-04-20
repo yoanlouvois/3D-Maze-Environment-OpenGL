@@ -32,6 +32,7 @@ set(SOURCES
         ${SRC_DIR}/cube.cpp
         ${SRC_DIR}/textured_cube.cpp
         src/sky_sphere.cpp
+        src/planet_sphere.cpp
 )
 
 # Assets paths available in code

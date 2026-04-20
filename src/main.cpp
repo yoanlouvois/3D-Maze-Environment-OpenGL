@@ -3,7 +3,9 @@
 #include "maze.h"
 #include "textured_cube.h"
 #include "sky_sphere.h"
+#include "planet_sphere.h"
 #include <string>
+#include <random>
 
 #ifndef SHADER_DIR
 #error "SHADER_DIR not defined"
@@ -36,6 +38,9 @@ int main()
 
     // Chargement de la texture du ciel
     Texture *sky_texture = new Texture(texture_dir + "sky2.png", GL_REPEAT, GL_LINEAR_MIPMAP_LINEAR, GL_LINEAR);
+
+    //Chargement de la texture des planètes
+    Texture *planet_texture = new Texture(texture_dir + "planet.png", GL_REPEAT, GL_LINEAR_MIPMAP_LINEAR, GL_LINEAR);
 
     // Définition de la taille du labyrinthe
     int maze_width = 21;
@@ -99,6 +104,38 @@ int main()
     Node* cube_node = new Node(cube_mat);
     cube_node->add(exitCube);
     viewer.scene_root->add(cube_node);
+
+    //Planètes
+    // Ajout de 5 planètes aléatoires au-dessus du labyrinthe
+    std::mt19937 rng(std::random_device{}());
+
+    // bornes de placement
+    std::uniform_real_distribution<float> distX(-10.0f, maze_width + 10.0f);
+    std::uniform_real_distribution<float> distY(6.0f, 14.0f);
+    std::uniform_real_distribution<float> distZ(-10.0f, maze_height + 10.0f);
+    std::uniform_real_distribution<float> distScale(1.0f, 3.0f);
+    std::uniform_real_distribution<float> distRot(0.0f, 360.0f);
+
+    for (int i = 0; i < 100; ++i) {
+        PlanetSphere* planet = new PlanetSphere(texture_shader, planet_texture, 24, 16);
+
+        glm::vec3 planetPos(
+                distX(rng),
+                distY(rng),
+                distZ(rng)
+        );
+
+        float scale = distScale(rng);
+        float angle = glm::radians(distRot(rng));
+
+        glm::mat4 planet_mat = glm::translate(glm::mat4(1.0f), planetPos)
+                               * glm::rotate(glm::mat4(1.0f), angle, glm::vec3(0.0f, 1.0f, 0.0f))
+                               * glm::scale(glm::mat4(1.0f), glm::vec3(scale));
+
+        Node* planet_node = new Node(planet_mat);
+        planet_node->add(planet);
+        viewer.scene_root->add(planet_node);
+    }
 
     // Lancement de la boucle principale de rendu du Viewer
     viewer.run();
