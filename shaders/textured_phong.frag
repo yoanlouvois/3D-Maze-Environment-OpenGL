@@ -36,4 +36,11 @@ void main()
     vec3 result = lighting * texColor;
 
     out_color = vec4(result, 1.0);
+
+    float fogDistance = length(FragPos);
+    float fogFactor = clamp(exp(-0.05 * fogDistance * fogDistance), 0.0, 1.0);
+    vec3 fogColor = vec3(0.02, 0.02, 0.08);
+
+    vec3 finalColor = mix(fogColor, result, fogFactor);
+    out_color = vec4(finalColor, 1.0);
 }
