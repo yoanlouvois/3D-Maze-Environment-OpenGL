@@ -180,7 +180,10 @@ bool Viewer::checkCollision(const glm::vec3& newPos) {
 
 // Gestion du mouvement de la caméra
 void Viewer::handle_camera_movement() {
-    float cameraSpeed = this->cameraSpeed; // Utilise ta variable membre
+    float currentSpeed = this->cameraSpeed; // Utilise ta variable membre
+    if (glfwGetKey(win, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS) {
+        currentSpeed = 0.02f;
+    }
 
     // 1. Calcul du vecteur de déplacement horizontal (XZ uniquement)
     glm::vec3 walkFront = glm::normalize(glm::vec3(cameraFront.x, 0.0f, cameraFront.z));
@@ -194,7 +197,7 @@ void Viewer::handle_camera_movement() {
 
     // 2. Application du déplacement avec collision
     if (glm::length(moveDir) > 0) {
-        moveDir = glm::normalize(moveDir) * cameraSpeed;
+        moveDir = glm::normalize(moveDir) * currentSpeed;
         if (!checkCollision(cameraPos + moveDir)) {
             cameraPos += moveDir;
         }
