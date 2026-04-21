@@ -20,6 +20,7 @@ Texture::Texture(const std::string& tex_file, GLenum wrap_mode, GLenum min_filte
 
     // load texture image
     int width, height, num_channels;
+    stbi_set_flip_vertically_on_load(true);
     unsigned char* data = stbi_load(tex_file.c_str(), &width, &height, &num_channels, 0);
     if (!data) {
         std::cerr << "Failed to load texture from file: " << tex_file << std::endl;
