@@ -18,11 +18,10 @@ The maze is generated procedurally, and the player must explore it and find the 
 ## Maze overview
 
 <p align="center">
-  <img src="https://github.com/user-attachments/assets/0da72971-a2c8-43a9-8d09-bedb6da6f0c5" width="30%" />
-  <img src="https://github.com/user-attachments/assets/0db15b02-48e4-476f-94dd-cdc02b5c74c9" width="30%" />
-  <img src="https://github.com/user-attachments/assets/8b233161-05be-4242-93b0-09dab47994cd" width="30%" />
+  <img src="https://github.com/user-attachments/assets/9079ad43-194d-4d79-afbb-cc5b618aa14d" width="30%" />
+  <img src="https://github.com/user-attachments/assets/94b1438b-cedd-4734-a4d6-dab3429da794" width="30%" />
+  <img src="https://github.com/user-attachments/assets/9a986cc8-fa0c-426b-8495-c724f2c581f0" width="30%" />
 </p>
-
 
 ---
 
