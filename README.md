@@ -12,6 +12,9 @@ The maze is generated procedurally, and the player must explore it and find the 
 - First-person camera (FPS-style movement)
 - Basic collision system
 - OpenGL rendering (GLFW + GLEW + GLM)
+- Fog-based atmosphere
+- Starry sky sphere
+- Floating planet decorations
 
 ---
 
@@ -24,6 +27,15 @@ The maze is generated procedurally, and the player must explore it and find the 
 </p>
 
 ---
+## Controls
+
+- `W / A / S / D` — Move
+- `Mouse` — Look around
+- `Shift` — Move faster
+- `Esc` or `Q` — Quit
+- `F11` — Toggle fullscreen
+
+---
 
 ## Requirements
 
@@ -32,6 +44,15 @@ The maze is generated procedurally, and the player must explore it and find the 
 - OpenGL
 - Git
 - Internet connection (dependencies are fetched automatically by CMake)
+
+---
+
+## Project structure
+
+- `src/` — C++ source files
+- `include/` — header files
+- `shaders/` — GLSL shaders
+- `textures/` — textures for the maze, sky, and planets
 
 ---
 
